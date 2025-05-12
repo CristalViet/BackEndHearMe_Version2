@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+mediapipe
+tensorflow
+opencv-python
+numpy
+python-multipart
+mysql-connector-python
