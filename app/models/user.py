@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 
@@ -23,6 +24,8 @@ class User(UserBase):
     class Config:
         from_attributes = True 
 =======
+=======
+>>>>>>> ebc48618dcd9e3a24147d544fd18df0fae58d4fd
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -41,5 +44,9 @@ class User(Base):
 
     # Relationships
     courses = relationship("Course", back_populates="user", cascade="all, delete-orphan")
+<<<<<<< HEAD
+    quizzes = relationship("Quiz", back_populates="user", cascade="all, delete-orphan") 
+>>>>>>> ebc48618dcd9e3a24147d544fd18df0fae58d4fd
+=======
     quizzes = relationship("Quiz", back_populates="user", cascade="all, delete-orphan") 
 >>>>>>> ebc48618dcd9e3a24147d544fd18df0fae58d4fd
