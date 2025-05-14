@@ -19,7 +19,7 @@ def get_users():
     conn = get_db_connection()
     try:
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT id, fullName, email, role FROM user")
+        cursor.execute("SELECT id, fullName, email, role FROM users")
         users = cursor.fetchall()
         return users
     finally:
@@ -31,7 +31,7 @@ def get_user(user_id: int):
     conn = get_db_connection()
     try:
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT id, fullName, email, role FROM user WHERE id = %s", (user_id,))
+        cursor.execute("SELECT id, fullName, email, role FROM users WHERE id = %s", (user_id,))
         user = cursor.fetchone()
         if user is None:
             raise HTTPException(status_code=404, detail="User not found")
@@ -47,7 +47,7 @@ def create_user(user: UserCreate):
         cursor = conn.cursor(dictionary=True)
         hashed_password = get_password_hash(user.password)
         cursor.execute(
-            "INSERT INTO user (fullName, email, password, role) VALUES (%s, %s, %s, %s)",
+            "INSERT INTO users (fullName, email, password, role) VALUES (%s, %s, %s, %s)",
             (user.fullName, user.email, hashed_password, user.role)
         )
         conn.commit()
@@ -92,14 +92,14 @@ def update_user(user_id: int, user: UserUpdate):
             raise HTTPException(status_code=400, detail="No fields to update")
             
         values.append(user_id)
-        query = f"UPDATE user SET {', '.join(update_fields)} WHERE id = %s"
+        query = f"UPDATE users SET {', '.join(update_fields)} WHERE id = %s"
         cursor.execute(query, values)
         conn.commit()
         
         if cursor.rowcount == 0:
             raise HTTPException(status_code=404, detail="User not found")
             
-        cursor.execute("SELECT id, fullName, email, role FROM user WHERE id = %s", (user_id,))
+        cursor.execute("SELECT id, fullName, email, role FROM users WHERE id = %s", (user_id,))
         updated_user = cursor.fetchone()
         return updated_user
     finally:
@@ -111,7 +111,7 @@ def delete_user(user_id: int):
     conn = get_db_connection()
     try:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM user WHERE id = %s", (user_id,))
+        cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
         conn.commit()
         if cursor.rowcount == 0:
             raise HTTPException(status_code=404, detail="User not found")
