@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 fastapi==0.115.12
 uvicorn==0.34.2
 mediapipe==0.10.7
@@ -8,3 +9,25 @@ python-multipart
 mysql-connector-python
 bcrypt
 pydantic[email]
+=======
+fastapi==0.104.1
+uvicorn==0.24.0
+mediapipe
+tensorflow
+opencv-python
+numpy
+python-multipart
+mysql-connector-python
+sqlalchemy==2.0.23
+python-jose[cryptography]
+passlib[bcrypt]
+python-dotenv==1.0.0
+pydantic==2.5.1
+pydantic[email]
+python-multipart
+alembic==1.12.1
+jose
+psycopg2-binary==2.9.9
+aiofiles==23.2.1
+Pillow==10.1.0
+>>>>>>> ebc48618dcd9e3a24147d544fd18df0fae58d4fd
