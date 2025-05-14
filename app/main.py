@@ -1,21 +1,11 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-<<<<<<< HEAD
-<<<<<<< HEAD
-from .api import course, dictionary, user, routes
-=======
-=======
->>>>>>> ebc48618dcd9e3a24147d544fd18df0fae58d4fd
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 import os
 
 from app.api.routes import router
 from app.api.endpoints import flashcard, auth
-<<<<<<< HEAD
->>>>>>> ebc48618dcd9e3a24147d544fd18df0fae58d4fd
-=======
->>>>>>> ebc48618dcd9e3a24147d544fd18df0fae58d4fd
 
 app = FastAPI()
 
@@ -63,20 +53,6 @@ async def test_static():
     })
 
 # Include API routes
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-app.include_router(course.router, prefix="/api/course", tags=["course"])
-app.include_router(dictionary.router, prefix="/api/dictionary", tags=["dictionary"])
-app.include_router(user.router, prefix="/api", tags=["users"])
-app.include_router(routes.router, prefix="/api", tags=["lesson"])
-=======
 app.include_router(router, prefix="/api")
 app.include_router(flashcard.router, prefix="/api/v1", tags=["flashcard"])
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
->>>>>>> ebc48618dcd9e3a24147d544fd18df0fae58d4fd
-=======
-app.include_router(router, prefix="/api")
-app.include_router(flashcard.router, prefix="/api/v1", tags=["flashcard"])
-app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
->>>>>>> ebc48618dcd9e3a24147d544fd18df0fae58d4fd

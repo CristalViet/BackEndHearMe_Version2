@@ -1,31 +1,4 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-from pydantic import BaseModel, EmailStr
-from typing import Optional
 
-class UserBase(BaseModel):
-    fullName: Optional[str] = None
-    email: str
-    role: Optional[str] = None
-
-class UserCreate(UserBase):
-    password: str
-
-class UserUpdate(UserBase):
-    password: Optional[str] = None
-
-class UserInDB(UserBase):
-    id: int
-    password: str
-
-class User(UserBase):
-    id: int
-
-    class Config:
-        from_attributes = True 
-=======
-=======
->>>>>>> ebc48618dcd9e3a24147d544fd18df0fae58d4fd
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -44,9 +17,6 @@ class User(Base):
 
     # Relationships
     courses = relationship("Course", back_populates="user", cascade="all, delete-orphan")
-<<<<<<< HEAD
+
     quizzes = relationship("Quiz", back_populates="user", cascade="all, delete-orphan") 
->>>>>>> ebc48618dcd9e3a24147d544fd18df0fae58d4fd
-=======
-    quizzes = relationship("Quiz", back_populates="user", cascade="all, delete-orphan") 
->>>>>>> ebc48618dcd9e3a24147d544fd18df0fae58d4fd
+
