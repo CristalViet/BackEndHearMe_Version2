@@ -5,7 +5,7 @@ class DatabaseSettings(BaseSettings):
     MYSQL_PASSWORD: str = ""
     MYSQL_HOST: str = "localhost"
     MYSQL_PORT: str = "3306"
-    MYSQL_DB: str = "hearme"
+    MYSQL_DB: str = "hearme_learning"
 
     @property
     def DATABASE_URL(self) -> str:

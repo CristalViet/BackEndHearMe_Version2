@@ -1,3 +1,4 @@
+
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -16,4 +17,6 @@ class User(Base):
 
     # Relationships
     courses = relationship("Course", back_populates="user", cascade="all, delete-orphan")
+
     quizzes = relationship("Quiz", back_populates="user", cascade="all, delete-orphan") 
+
