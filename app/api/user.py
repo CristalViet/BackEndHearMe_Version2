@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List
-from ..models.user import User, UserCreate, UserUpdate
+from ..models.user import UserCreate, UserUpdate
 from ..config.database import get_db_connection
 from mysql.connector.pooling import PooledMySQLConnection
 import bcrypt

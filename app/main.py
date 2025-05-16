@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 import os
 
+from app.models.flashcard import Course, Quiz  # Import Course và Quiz sau
 from app.api.routes import router
 from app.api.endpoints import flashcard, auth
 
