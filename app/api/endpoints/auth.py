@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 from typing import Any
 
-from app.core.deps import get_db
+from app.core.deps import get_db,get_current_active_user  
 from app.services.auth import (
     authenticate_user,
     create_access_token,
@@ -40,7 +40,11 @@ def login(
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.email, "role": user.role},
+        data={
+        "sub": user.email,
+        "role": user.role,
+        "fullName": user.fullName  # <--- Thêm dòng này
+    },
         expires_delta=access_token_expires
     )
     
@@ -67,7 +71,7 @@ def login_for_access_token(
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.email, "role": user.role},
+        data={"sub": user.email, "role": user.role, "fullName": user.fullName},
         expires_delta=access_token_expires
     )
     
@@ -75,3 +79,7 @@ def login_for_access_token(
         "access_token": access_token,
         "token_type": "bearer"
     } 
+@router.get("/me", response_model=UserResponse)
+async def get_current_user_details(current_user: dict = Depends(get_current_active_user)):
+
+    return current_user

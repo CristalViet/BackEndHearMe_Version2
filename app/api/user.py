@@ -1,9 +1,19 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List
-from ..models.user import User, UserCreate, UserUpdate
+from ..models.user import UserCreate, UserUpdate
 from ..config.database import get_db_connection
 from mysql.connector.pooling import PooledMySQLConnection
 import bcrypt
+from pydantic import BaseModel
+
+class UserResponse(BaseModel):
+    id: int
+    fullName: str
+    email: str
+    role: str
+
+    class Config:
+        from_attributes = True
 
 router = APIRouter()
 
@@ -14,7 +24,7 @@ def get_password_hash(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
-@router.get("/users/", response_model=List[User])
+@router.get("/users/", response_model=List[UserResponse])
 def get_users():
     conn = get_db_connection()
     try:
@@ -26,7 +36,7 @@ def get_users():
         cursor.close()
         conn.close()
 
-@router.get("/users/{user_id}", response_model=User)
+@router.get("/users/{user_id}", response_model=UserResponse)
 def get_user(user_id: int):
     conn = get_db_connection()
     try:
@@ -40,7 +50,7 @@ def get_user(user_id: int):
         cursor.close()
         conn.close()
 
-@router.post("/users/", response_model=User)
+@router.post("/users/", response_model=UserResponse)
 def create_user(user: UserCreate):
     conn = get_db_connection()
     try:
@@ -67,7 +77,7 @@ def create_user(user: UserCreate):
         cursor.close()
         conn.close()
 
-@router.put("/users/{user_id}", response_model=User)
+@router.put("/users/{user_id}", response_model=UserResponse)
 def update_user(user_id: int, user: UserUpdate):
     conn = get_db_connection()
     try:

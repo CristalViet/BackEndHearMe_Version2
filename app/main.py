@@ -1,9 +1,11 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from .api import course, dictionary, user, routes
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 import os
 
+from app.models.flashcard import Course, Quiz  # Import Course và Quiz sau
 from app.api.routes import router
 from app.api.endpoints import flashcard, auth
 
@@ -53,6 +55,12 @@ async def test_static():
     })
 
 # Include API routes
+
+app.include_router(course.router, prefix="/api/course", tags=["course"])
+app.include_router(dictionary.router, prefix="/api/dictionary", tags=["dictionary"])
+app.include_router(user.router, prefix="/api/users", tags=["users"])
+app.include_router(routes.router, prefix="/api", tags=["lesson"])
 app.include_router(router, prefix="/api")
 app.include_router(flashcard.router, prefix="/api/v1", tags=["flashcard"])
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
+
