@@ -6,5 +6,11 @@ opencv-python==4.10.0.84
 numpy==1.24.4
 python-multipart
 mysql-connector-python
+
 bcrypt
 pydantic[email]
+
+sqlalchemy
+cryptography
+pydantic
+

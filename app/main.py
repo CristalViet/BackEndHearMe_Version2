@@ -11,6 +11,7 @@ from app.api.endpoints import flashcard, auth
 
 app = FastAPI()
 
+
 # Create uploads directory if it doesn't exist
 os.makedirs("public/uploads", exist_ok=True)
 
@@ -25,12 +26,14 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     expose_headers=["*"],
     max_age=3600,
 )
+
 
 # Add middleware to log all requests
 @app.middleware("http")
@@ -63,4 +66,5 @@ app.include_router(routes.router, prefix="/api", tags=["lesson"])
 app.include_router(router, prefix="/api")
 app.include_router(flashcard.router, prefix="/api/v1", tags=["flashcard"])
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
+
 

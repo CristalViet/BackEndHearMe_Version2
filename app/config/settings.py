@@ -15,8 +15,10 @@ FILTERED_FACE = [4, 6, 8, 9, 33, 37, 40, 46, 52, 55, 61, 70, 80, 82, 84, 87, 88,
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
+
     "password": "",
     "database": "hearme_learning"
+
 }
 
 # Cấu hình thư mục
