@@ -74,7 +74,7 @@ async def delete_course(
     """
     Delete a course.
     """
-    return await FlashcardService.delete_course(db, course_id, current_user["id"])
+    return FlashcardService.delete_course(db, course_id, current_user["id"])
 
 @router.post("/courses/{course_id}/upload-image")
 async def upload_course_image(

@@ -20,6 +20,7 @@ roadmap_service = RoadmapService(model_service)
 router.include_router(user_router, tags=["users"])
 router.include_router(course_router, prefix="/course", tags=["courses"])
 
+
 @router.get("/roadmap")
 async def get_roadmap():
     """Lấy danh sách các chương và bài học"""
@@ -94,7 +95,11 @@ async def process_video(request: VideoProcessRequest):
 
     print(f"Video processing complete - Similarity: {similarity}, Status: {status}")
     return VideoResponse(similarity=float(similarity), status=status)
-
+# Thêm route mới để điều hướng
+@router.get("/dictionary")
+async def redirect_to_dictionary():
+    """Điều hướng từ /dictionary đến API dictionary"""
+    return RedirectResponse(url="/api/words")
 @router.get("/")
 async def redirect_to_index():
     return RedirectResponse(url="/public/index.html") 

@@ -4,6 +4,8 @@ from fastapi import UploadFile, HTTPException
 import os
 from datetime import datetime
 from sqlalchemy.sql import text
+from sqlalchemy import select, delete, and_
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.flashcard import Course, Quiz
 from app.schemas.flashcard import CourseCreate, QuizCreate
@@ -415,4 +417,32 @@ class FlashcardService:
             raise HTTPException(
                 status_code=500,
                 detail=f"Error updating course: {str(e)}"
-            ) 
+            )
+
+    @staticmethod
+    def delete_course(db: Session, course_id: int, user_id: int):
+        try:
+            # Get the course
+            course = db.query(Course).filter(
+                Course.course_id == course_id,
+                Course.user_id == user_id
+            ).first()
+
+            if not course:
+                raise HTTPException(
+                    status_code=404,
+                    detail="Course not found or you don't have permission to delete it"
+                )
+
+            # Delete all quizzes associated with the course
+            db.query(Quiz).filter(Quiz.course_id == course_id).delete()
+
+            # Delete the course
+            db.delete(course)
+            db.commit()
+            
+            return {"message": "Course deleted successfully"}
+
+        except Exception as e:
+            db.rollback()
+            raise HTTPException(status_code=500, detail=str(e)) 
