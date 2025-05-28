@@ -6,3 +6,6 @@ opencv-python
 numpy
 python-multipart
 mysql-connector-python
+sqlalchemy
+cryptography
+pydantic

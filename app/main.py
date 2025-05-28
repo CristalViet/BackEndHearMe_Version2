@@ -4,14 +4,13 @@ from app.api.routes import router
 
 app = FastAPI()
 
-# CORS middleware
+# Cấu hình CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Trong môi trường production, nên chỉ định domain cụ thể
+    allow_origins=["*"],  # Cho phép tất cả domain truy cập
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include API routes
-app.include_router(router, prefix="/api")
+app.include_router(router)

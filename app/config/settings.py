@@ -16,7 +16,8 @@ DB_CONFIG = {
     "host": "localhost",
     "user": "root",
     "password": "admin",
-    "database": "hearme_learning"
+    "database": "hearme_learning",
+    "port": 3306
 }
 
 # Cấu hình thư mục
