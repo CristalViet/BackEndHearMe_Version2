@@ -9,6 +9,10 @@ from app.services.landmark_service import LandmarkService
 from app.services.model_service import ModelService
 from app.services.roadmap_service import RoadmapService
 from app.config.settings import FRAMES_LIMIT
+
+from .user import router as user_router
+from .course import router as course_router
+
 from app.api.endpoints import user, dictionary
 
 router = APIRouter()
@@ -16,8 +20,11 @@ landmark_service = LandmarkService()
 model_service = ModelService()
 roadmap_service = RoadmapService(model_service)
 
-# Include các routers
-router.include_router(user.router, prefix="/api", tags=["users"])
+
+router.include_router(user_router, tags=["users"])
+router.include_router(course_router, prefix="/course", tags=["courses"])
+
+
 router.include_router(dictionary.router, prefix="/api", tags=["dictionary"])
 
 # Thêm route mới để điều hướng
@@ -25,6 +32,7 @@ router.include_router(dictionary.router, prefix="/api", tags=["dictionary"])
 async def redirect_to_dictionary():
     """Điều hướng từ /dictionary đến API dictionary"""
     return RedirectResponse(url="/api/words")
+
 
 @router.get("/roadmap")
 async def get_roadmap():
