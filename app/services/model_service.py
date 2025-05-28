@@ -17,7 +17,7 @@ class ModelService:
         """
         config = execute_query(query, (model_id,), fetch_one=True)
         if not config:
-            raise Exception("Model not found in database")
+            raise Exception(f"Model with ID {model_id} not found in database")
 
         target_shape_str = config['target_shape'].strip("()").replace(" ", "")
         try:
@@ -28,11 +28,15 @@ class ModelService:
         self.config = {
             "model_file": config['model_file'],
             "embedding_dir": config['embedding_dir'],
-            "threshold": config['threshold'],
-            "target_shape": target_shape,
-            "video_dir": "Family/Family_video2"
+            "threshold": float(config['threshold']),
+            "target_shape": target_shape
         }
-        self.model = load_model(self.config['model_file'])
+
+        try:
+            print(f"Loading model from: {self.config['model_file']}")
+            self.model = load_model(self.config['model_file'])
+        except Exception as e:
+            raise Exception(f"Error loading model file: {str(e)}")
 
     def extract_embedding(self, video_landmarks):
         video_landmarks = np.array(video_landmarks)
@@ -49,7 +53,9 @@ class ModelService:
 
     def calculate_similarity(self, embedding1, embedding2):
         cosine_similarity = CosineSimilarity()
-        return cosine_similarity(embedding1, embedding2).numpy()
+        similarity = cosine_similarity(embedding1, embedding2)
+        return float(similarity.numpy())
 
     def get_similarity_status(self, similarity):
-        return "Match!" if similarity > self.config['threshold'] else "Keep Practicing" 
+        threshold = self.config['threshold']
+        return "Match!" if similarity >= threshold else "Not Match" 
