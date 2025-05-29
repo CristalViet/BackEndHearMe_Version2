@@ -2,6 +2,8 @@ import numpy as np
 from tensorflow.keras.models import load_model
 from tensorflow.keras.metrics import CosineSimilarity
 from app.database.connection import execute_query
+from datetime import datetime
+from fastapi import Request
 
 class ModelService:
     def __init__(self):
@@ -56,6 +58,46 @@ class ModelService:
         similarity = cosine_similarity(embedding1, embedding2)
         return float(similarity.numpy())
 
-    def get_similarity_status(self, similarity):
+    def get_similarity_status(self, similarity, user_id: int = None, video_id: int = None):
         threshold = self.config['threshold']
-        return "Match!" if similarity >= threshold else "Not Match" 
+        status = "Match!" if similarity >= threshold else "Not Match"
+        
+        print(f"Checking match with threshold {threshold}: similarity={similarity}, status={status}")
+        print(f"User ID: {user_id}, Video ID: {video_id}")
+        
+        if status == "Match!" and user_id is not None and video_id is not None:
+            try:
+                print(f"Attempting to save progress for user {user_id} on video {video_id}")
+                insert_progress = """
+                    INSERT INTO user_video_progress (user_id, video_id, is_completed, completed_at)
+                    VALUES (%s, %s, %s, %s)
+                    ON DUPLICATE KEY UPDATE is_completed = VALUES(is_completed), completed_at = VALUES(completed_at)
+                """
+                current_time = datetime.utcnow()
+                params = (user_id, video_id, True, current_time)
+                print(f"Executing query with params: {params}")
+                
+                result = execute_query(insert_progress, params)
+                print(f"Query executed. Result: {result}")
+                
+                # Verify if the record was actually saved
+                verify_query = """
+                    SELECT * FROM user_video_progress 
+                    WHERE user_id = %s AND video_id = %s
+                """
+                verify_result = execute_query(verify_query, (user_id, video_id), fetch_one=True)
+                print(f"Verification query result: {verify_result}")
+                
+                if verify_result:
+                    print(f"Progress saved and verified for user {user_id} on video {video_id}")
+                else:
+                    print(f"Warning: Progress may not have been saved correctly")
+                    
+            except Exception as e:
+                print(f"Error saving progress: {str(e)}")
+                print(f"Error type: {type(e)}")
+                import traceback
+                print(f"Full traceback: {traceback.format_exc()}")
+                # Continue with returning status even if saving progress fails
+                
+        return status 

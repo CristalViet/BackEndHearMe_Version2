@@ -8,13 +8,13 @@ from app.models.vocabulary import Vocabulary
 from app.models.topic import Topic
 from app.schemas.vocabulary import VocabularyResponse
 import logging
-
+from .dictionary_admin import router1
 # Cấu hình logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-
+router.include_router(router1, prefix="/admin", tags=["dictionary-admin"])
 class Topic(BaseModel):
     id: int
     name: str
@@ -44,7 +44,7 @@ async def get_topics(db: Session = Depends(get_db_connection)):
 @router.get("/vocabularies", response_model=dict)
 def get_vocabularies(
     word: Optional[str] = None,
-    limit: int = 10,
+    limit: int = 1000,
     offset: int = 0
 ):
     conn = None
@@ -201,7 +201,7 @@ async def search_vocabularies(request: Request):
         # Parse request body
         body = await request.json()
         search_term = body.get("search_term", "")
-        limit = body.get("limit", 10)
+        limit = body.get("limit", 1000)
         offset = body.get("offset", 0)
 
         conn = get_db_connection()

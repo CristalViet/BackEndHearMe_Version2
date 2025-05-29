@@ -283,4 +283,49 @@ async def get_videos_by_chapter(chapter_id: int):
         return videos
     finally:
         cursor.close()
+        conn.close()
+
+@router.get("/user-progress/{user_id}", response_model=List[int])
+async def get_user_progress(user_id: int):
+    """Lấy danh sách video_id mà user đã hoàn thành"""
+    print(f"\n=== Getting progress for user {user_id} ===")
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT DISTINCT video_id 
+            FROM user_video_progress 
+            WHERE user_id = %s AND is_completed = TRUE
+            ORDER BY video_id
+        """
+        print(f"Executing query: {query}")
+        print(f"With parameters: {(user_id,)}")
+        
+        cursor.execute(query, (user_id,))
+        results = cursor.fetchall()
+        
+        print(f"Raw query results: {results}")
+        
+        if not results:
+            print("No completed videos found")
+            return []
+            
+        video_ids = [row['video_id'] for row in results]
+        print(f"Found {len(video_ids)} completed videos for user {user_id}: {video_ids}")
+        
+        # Verify data in database
+        verify_query = "SELECT * FROM user_video_progress WHERE user_id = %s"
+        cursor.execute(verify_query, (user_id,))
+        all_progress = cursor.fetchall()
+        print(f"All progress records for user: {all_progress}")
+        
+        return video_ids
+    except Exception as e:
+        print(f"Error fetching user progress: {str(e)}")
+        print(f"Error type: {type(e)}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
+        return []
+    finally:
+        cursor.close()
         conn.close() 

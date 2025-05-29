@@ -13,10 +13,20 @@ def execute_query(query, params=None, fetch_one=False):
     cursor = conn.cursor(dictionary=True)
     try:
         cursor.execute(query, params or ())
-        if fetch_one:
-            result = cursor.fetchone()
+        
+        # Check if this is a SELECT query
+        is_select = query.strip().upper().startswith('SELECT')
+        
+        if is_select:
+            if fetch_one:
+                result = cursor.fetchone()
+            else:
+                result = cursor.fetchall()
         else:
-            result = cursor.fetchall()
+            # For INSERT, UPDATE, DELETE operations
+            conn.commit()
+            result = cursor.rowcount
+            
         return result
     except mysql.connector.Error as e:
         raise HTTPException(status_code=500, detail=f"Database query failed: {str(e)}")

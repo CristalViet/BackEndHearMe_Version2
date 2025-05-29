@@ -63,4 +63,3 @@ app.include_router(routes.router, prefix="/api", tags=["lesson"])
 app.include_router(router, prefix="/api")
 app.include_router(flashcard.router, prefix="/api/v1", tags=["flashcard"])
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
-

@@ -22,6 +22,7 @@ class RoadmapService:
         return re.sub(r'\s*\d+$', '', raw_label_name)
 
     def get_roadmap(self):
+        # Lấy tất cả chapters thuộc model_id = 1
         chapters_query = """
             SELECT id, name, model_id
             FROM chapters
@@ -41,7 +42,7 @@ class RoadmapService:
                 continue  # bỏ qua nếu không có cấu hình
 
             videos_query = """
-                SELECT video_filename
+                SELECT id, video_filename
                 FROM videos
                 WHERE model_id = %s AND chapter_id = %s
                 ORDER BY video_filename
@@ -57,6 +58,7 @@ class RoadmapService:
                 embedding_path = f"{config['embedding_dir']}/{base}_embedding.npy"
 
                 chapter_videos.append({
+                    "id": video['id'],  # Thêm video_id vào mỗi lesson
                     "name": label,
                     "path": public_path,
                     "embedding": embedding_path,

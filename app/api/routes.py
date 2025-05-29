@@ -2,7 +2,7 @@ import os
 import base64
 import numpy as np
 import cv2
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import RedirectResponse
 from app.models.schemas import VideoProcessRequest, VideoResponse
 from app.services.landmark_service import LandmarkService
@@ -11,6 +11,7 @@ from app.services.roadmap_service import RoadmapService
 from app.config.settings import FRAMES_LIMIT
 from .user import router as user_router
 from .course import router as course_router
+from app.core.deps import get_current_active_user, get_current_user_optional  # Import optional authentication
 
 router = APIRouter()
 landmark_service = LandmarkService()
@@ -27,7 +28,10 @@ async def get_roadmap():
     return roadmap_service.get_roadmap()
 
 @router.post("/process-video", response_model=VideoResponse)
-async def process_video(request: VideoProcessRequest):
+async def process_video(
+    request: VideoProcessRequest,
+    current_user: dict = Depends(get_current_user_optional)  # Make authentication optional
+):
     """
     Xử lý video từ người dùng và so sánh với video mẫu
     - frames: Danh sách các frame dạng base64
@@ -37,6 +41,12 @@ async def process_video(request: VideoProcessRequest):
     frames = request.frames
     lesson_path = request.lessonPath
     model_id = request.modelId
+
+    # Log authentication status
+    if current_user:
+        print(f"Processing video for authenticated user: {current_user['email']}")
+    else:
+        print("Processing video for unauthenticated user")
 
     print(f"Processing video request - Model ID: {model_id}, Lesson Path: {lesson_path}")
 
@@ -53,6 +63,7 @@ async def process_video(request: VideoProcessRequest):
     print(f"Available chapters in roadmap: {list(roadmap.keys())}")
     
     reference_embedding_path = None
+    video_id = None
     # Tìm bài học trong roadmap với model_id tương ứng
     for chapter_key, chapter in roadmap.items():
         chapter_model_id = int(chapter_key.split('-')[0])
@@ -60,9 +71,12 @@ async def process_video(request: VideoProcessRequest):
         if chapter_model_id == model_id:
             for lesson in chapter:
                 print(f"Checking lesson path: {lesson['path']} against {lesson_path}")
+                print(f"Lesson data: {lesson}")  # Print full lesson data
                 if lesson["path"] == lesson_path:
                     reference_embedding_path = lesson["embedding"]
+                    video_id = lesson.get("id")  # Lấy video_id từ lesson
                     print(f"Found embedding path: {reference_embedding_path}")
+                    print(f"Found video_id: {video_id}")  # Print video_id
                     break
             if reference_embedding_path:
                 break
@@ -91,15 +105,25 @@ async def process_video(request: VideoProcessRequest):
 
     # Tính độ tương đồng
     similarity = model_service.calculate_similarity(user_embedding, reference_embedding)
-    status = model_service.get_similarity_status(similarity)
+    
+    # Lấy user_id từ current_user nếu có
+    user_id = current_user["id"] if current_user else None
+    print(f"Authentication status:")
+    print(f"- Current user: {current_user}")
+    print(f"- User ID: {user_id}")
+    print(f"- Video ID: {video_id}")
+    
+    status = model_service.get_similarity_status(similarity, user_id, video_id)
 
     print(f"Video processing complete - Similarity: {similarity}, Status: {status}")
     return VideoResponse(similarity=float(similarity), status=status)
+
 # Thêm route mới để điều hướng
 @router.get("/dictionary")
 async def redirect_to_dictionary():
     """Điều hướng từ /dictionary đến API dictionary"""
     return RedirectResponse(url="/api/words")
+
 @router.get("/")
 async def redirect_to_index():
     return RedirectResponse(url="/public/index.html") 
